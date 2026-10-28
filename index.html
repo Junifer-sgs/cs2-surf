@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Surf GO</title>
+<style>
+*,*:before,*:after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0a1628;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default}
+body{display:flex;align-items:center;justify-content:center}
+#unity-container{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh)}
+#unity-canvas{width:100%;height:100%;display:block}
+#loading-cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#unity-logo img{max-width:320px;width:80vw;margin-bottom:24px;pointer-events:none}
+#unity-progress-bar-empty{width:40%;min-width:180px;height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin-top:12px}
+#unity-progress-bar-full{height:100%;width:0%;background:linear-gradient(90deg,#00c6ff,#0072ff);transition:width .3s ease}
+.loader-label{color:#aad4ff;font-family:Arial,sans-serif;font-size:14px;margin-top:10px;letter-spacing:1px;text-align:center;max-width:90%;overflow-wrap:anywhere}
+.circles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.circles div{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(0,198,255,.15);animation:rise 8s infinite ease-in}
+.circles .circle1{left:5%;animation-delay:0s;width:12px;height:12px}
+.circles .circle2{left:15%;animation-delay:1s;width:18px;height:18px}
+.circles .circle3{left:25%;animation-delay:2s}
+.circles .circle4{left:35%;animation-delay:.5s;width:14px;height:14px}
+.circles .circle5{left:45%;animation-delay:1.5s;width:22px;height:22px}
+.circles .circle6{left:55%;animation-delay:.8s}
+.circles .circle7{left:65%;animation-delay:2.5s;width:16px;height:16px}
+.circles .circle8{left:75%;animation-delay:.3s}
+.circles .circle9{left:85%;animation-delay:1.8s;width:24px;height:24px}
+.circles .circle10{left:90%;animation-delay:.6s;width:10px;height:10px}
+@keyframes rise{0%{bottom:-20px;opacity:0}10%{opacity:.4}90%{opacity:.1}100%{bottom:110%;opacity:0}}
+@media(max-width:600px){#unity-progress-bar-empty{width:65%}}
+</style>
+</head>
+<body>
+<div id="unity-container">
+<canvas id="unity-canvas"></canvas>
+<div id="loading-cover" style="background:url('https://cdn.jsdelivr.net/gh/777kze777/surf@main/background.png') center/cover">
+  <div class="circles" id="cuboid_anim"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div><div class="circle5"></div><div class="circle6"></div><div class="circle7"></div><div class="circle8"></div><div class="circle9"></div><div class="circle10"></div></div>
+  <div id="unity-logo"><img src="https://cdn.jsdelivr.net/gh/777kze777/surf@main/logo.png" alt="Surf GO"/></div>
+  <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+  <div class="loader-label" id="loader-label">Loading...</div>
+</div>
+</div>
+<script>
+/* Yandex SDK stub */
+window.YaGames={init:function(){return Promise.resolve({
+ environment:{app:{id:'0'},i18n:{lang:'en',tld:'com'},browser:{lang:'en'},payload:null},
+ deviceInfo:{type:'desktop',isMobile:function(){return false},isDesktop:function(){return true},isTablet:function(){return false},isTV:function(){return false}},
+ adv:{showFullscreenAdv:function(o){if(o&&o.callbacks&&o.callbacks.onClose)o.callbacks.onClose(false)},showRewardedVideo:function(o){if(o&&o.callbacks&&o.callbacks.onClose)o.callbacks.onClose()},showBannerAdv:function(){},hideBannerAdv:function(){},getBannerAdvStatus:function(){return Promise.resolve({stickyAdvIsShowing:false})}},
+ auth:{openAuthDialog:function(){return Promise.resolve()}},
+ feedback:{canReview:function(){return Promise.resolve({value:false,reason:''})},requestReview:function(){return Promise.resolve({feedbackSent:false})}},
+ shortcut:{canShowPrompt:function(){return Promise.resolve({canShow:false})},showPrompt:function(){return Promise.resolve({outcome:'rejected'})}},
+ getLeaderboards:function(){return Promise.resolve({setLeaderboardScore:function(){},getLeaderboardEntries:function(){return Promise.reject(new Error('Unavailable'))}})},
+ getPayments:function(){return Promise.reject(new Error('No payments'))},
+ getPlayer:function(){return Promise.resolve({getMode:function(){return'lite'},getName:function(){return''},getUniqueID:function(){return'0'},getPhoto:function(){return''},getPayingStatus:function(){return'unknown'},setData:function(){return Promise.resolve()},getData:function(){return Promise.resolve({})}})},
+ serverTime:function(){return Date.now()},on:function(){},features:{LoadingAPI:{ready:function(){}},GameplayAPI:{start:function(){},stop:function(){}}}
+})}};
+(function(){var s=document.createElement('script');s.src='/sdk.js';s.onerror=function(){console.warn('[Stub] sdk.js unavailable; using stub')};document.head.appendChild(s)})();
+</script>
+<script>
+var CDN='https://cdn.jsdelivr.net/gh/777kze777/surf@7a3c946/Build';
+var LOADER='f2d439c40430b2f9ae804449b03b5e5b';
+var FRAMEWORK='dcfe935f79be52697b571b1448461520';
+var canvas=document.querySelector('#unity-canvas');
+var progressBarFull=document.querySelector('#unity-progress-bar-full');
+var loaderLabel=document.querySelector('#loader-label');
+var myGameInstance=null,leaderboard=null,player=null,ysdk=null;
+function isMobileLike(){if(navigator.userAgentData&&'mobile'in navigator.userAgentData)return navigator.userAgentData.mobile;if(window.matchMedia&&window.matchMedia('(pointer: coarse)').matches)return true;if(/Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent||''))return true;return Math.min(screen.width,screen.height)<=820}
+var nativeDPR=window.devicePixelRatio||1;
+var dpr=isMobileLike()?Math.min(.85*nativeDPR,nativeDPR):nativeDPR;
+canvas.style.background='center / cover';
+async function fetchParts(urls,label){var parts=[];for(var i=0;i<urls.length;i++){loaderLabel.textContent=label+' '+(i+1)+'/'+urls.length+'...';var r=await fetch(urls[i]);if(!r.ok)throw new Error('Part failed: '+urls[i]+' HTTP '+r.status);parts.push(new Uint8Array(await r.arrayBuffer()))}var total=parts.reduce(function(s,p){return s+p.length},0),merged=new Uint8Array(total),off=0;for(var j=0;j<parts.length;j++){merged.set(parts[j],off);off+=parts[j].length;parts[j]=null}return merged}
+function brotliBlobUrl(bytes){return URL.createObjectURL(new Blob([bytes],{type:'application/octet-stream'}))}
+var script=document.createElement('script');
+script.src=CDN+'/'+LOADER+'.loader.js';
+script.onerror=function(){loaderLabel.textContent='Loader download failed. Check CDN URL.';console.error('Unity loader failed:',script.src)};
+script.onload=async function(){var dataUrl=null,codeUrl=null;try{
+var DATA_URLS=[
+'https://cdn.jsdelivr.net/gh/777kze777/surf@d584fd4/Build/b8181f262369a6bf3089d895b5d32586.data.br.part0',
+'https://cdn.jsdelivr.net/gh/777kze777/surf@d584fd4/Build/b8181f262369a6bf3089d895b5d32586.data.br.part1',
+'https://cdn.jsdelivr.net/gh/777kze777/surf@d584fd4/Build/b8181f262369a6bf3089d895b5d32586.data.br.part2'];
+var WASM_URLS=[
+'https://cdn.jsdelivr.net/gh/z799gs/66443488@bf4c67b/0201508d745b324b5b1459f0c1d7b89c.wasm.br.part0',
+'https://cdn.jsdelivr.net/gh/z799gs/66443488@bf4c67b/0201508d745b324b5b1459f0c1d7b89c.wasm.br.part1',
+'https://cdn.jsdelivr.net/gh/z799gs/66443488@bf4c67b/0201508d745b324b5b1459f0c1d7b89c.wasm.br.part2',
+'https://cdn.jsdelivr.net/gh/z799gs/66443488@bf4c67b/0201508d745b324b5b1459f0c1d7b89c.wasm.br.part3',
+'https://cdn.jsdelivr.net/gh/z799gs/66443488@bf4c67b/0201508d745b324b5b1459f0c1d7b89c.wasm.br.part4',
+'https://cdn.jsdelivr.net/gh/z799gs/66443488@bf4c67b/0201508d745b324b5b1459f0c1d7b89c.wasm.br.part5'];
+loaderLabel.textContent='Downloading game data...';
+var dataBytes=await fetchParts(DATA_URLS,'Data'),wasmBytes=await fetchParts(WASM_URLS,'WASM');
+dataUrl=brotliBlobUrl(dataBytes);codeUrl=brotliBlobUrl(wasmBytes);
+var config={dataUrl:dataUrl,frameworkUrl:CDN+'/'+FRAMEWORK+'.framework.js',codeUrl:codeUrl,streamingAssetsUrl:'https://cdn.jsdelivr.net/gh/777kze777/surf@d584fd4/StreamingAssets',companyName:'Kot Games',productName:'Surf GO',productVersion:'3.411',devicePixelRatio:dpr};
+loaderLabel.textContent='Starting...';
+createUnityInstance(canvas,config,function(progress){progressBarFull.style.width=(100*progress)+'%';loaderLabel.textContent='Loading... '+Math.round(progress*100)+'%'}).then(function(inst){myGameInstance=inst;try{inst.SendMessage('Yandex WebGL','InitializeYandexInstance')}catch(e){console.warn('Yandex init message skipped',e)}var anim=document.getElementById('cuboid_anim'),cover=document.getElementById('loading-cover');if(anim)anim.remove();if(cover)cover.style.display='none';if(dataUrl)URL.revokeObjectURL(dataUrl);if(codeUrl)URL.revokeObjectURL(codeUrl);console.log('Unity initialized')}).catch(function(e){console.error(e);loaderLabel.textContent='Unity startup failed: '+(e&&e.message?e.message:String(e))});
+}catch(e){console.error('Load error:',e);loaderLabel.textContent='Load error: '+(e&&e.message?e.message:String(e))}};
+document.body.appendChild(script);
+function initYsdk(){return YaGames.init().then(function(y){ysdk=y;return y})}
+function initLeaderboard(){return (ysdk?Promise.resolve(ysdk):initYsdk()).then(function(y){return y.getLeaderboards()}).then(function(lb){leaderboard=lb;return lb})}
+function initPlayer(){return (ysdk?Promise.resolve(ysdk):initYsdk()).then(function(y){return y.getPlayer()}).then(function(p){window.player=p;player=p;return p})}
+function checkCanShowShorcutDialog(){return (ysdk?Promise.resolve(ysdk):initYsdk()).then(function(y){return y.shortcut.canShowPrompt()}).then(function(p){if(p.canShow&&myGameInstance)myGameInstance.SendMessage('Yandex WebGL','ShortcutDialogCanShow')})}
+</script>
+<script>
+var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+if(isIOS){document.documentElement.style.height='100%';document.body.style.cssText+=';height:100%;position:fixed;width:100%';document.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false})}
+</script>
+</body>
+</html>
